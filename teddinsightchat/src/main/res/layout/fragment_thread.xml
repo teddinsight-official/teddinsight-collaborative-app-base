@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <include layout="@layout/chat_toolbar" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <TextView
+            android:id="@+id/activity_thread_empty_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/activity_thread_editor_parent"
+            android:layout_marginStart="@dimen/simple_padding_huge"
+            android:layout_marginEnd="@dimen/simple_padding_huge"
+            android:gravity="center"
+            android:text="Start new chat" />
+
+        <ng.com.teddinsight.teddinsightchat.widgets.EmptyStateRecyclerView
+            android:id="@+id/activity_thread_messages_recycler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/activity_thread_editor_parent"
+            android:clipToPadding="false"
+            android:paddingBottom="@dimen/simple_padding_medium"
+            tools:listitem="@layout/item_message_sent" />
+
+        <RelativeLayout
+            android:id="@+id/activity_thread_editor_parent"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:padding="@dimen/simple_padding_small">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/activity_thread_send_fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_margin="@dimen/simple_padding_small"
+                android:clickable="true"
+                app:elevation="0dp"
+                app:fabSize="mini"
+                app:srcCompat="@drawable/ic_send" />
+
+            <ProgressBar
+                android:id="@+id/activity_thread_progress"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true" />
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/activity_thread_input_edit_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_margin="@dimen/simple_padding_small"
+                android:layout_toStartOf="@id/activity_thread_send_fab"
+                android:background="@drawable/chip_chat"
+                android:fontFamily="@font/montserrat"
+                android:hint="Message"
+                android:inputType="textMultiLine|textCapSentences|textAutoComplete|textAutoCorrect"
+                android:maxLines="5"
+                android:padding="@dimen/simple_padding_largish"
+                android:textColor="@color/white"
+                android:textColorHint="@color/white"
+                android:textSize="@dimen/text_size_secondary" />
+
+        </RelativeLayout>
+
+
+    </RelativeLayout>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

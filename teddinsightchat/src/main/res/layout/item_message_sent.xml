@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/item_message_parent"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="8dp"
+    android:layout_marginEnd="8dp"
+    tools:ignore="RtlHardcoded">
+
+    <TextView
+        android:id="@+id/item_message_date_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="Placeholdegggfgsffr"
+        android:textColor="@color/black"
+        android:textSize="@dimen/text_size_small"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/item_message_body_text_view" />
+
+    <TextView
+        android:id="@+id/item_message_body_text_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/message_sent_chip"
+        android:clickable="true"
+        android:fontFamily="@font/montserrat"
+        android:longClickable="true"
+        android:padding="@dimen/simple_padding_medium"
+        android:paddingStart="@dimen/simple_padding_large"
+        android:paddingEnd="@dimen/simple_padding_large"
+        android:text="Placehd"
+        android:textColor="@color/colorWhite"
+        android:textSize="@dimen/text_size_secondary"
+
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

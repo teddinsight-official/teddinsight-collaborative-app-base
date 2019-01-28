@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">TeddinsightChat</string>
+    <string name="no_staff">No Staff</string>
+    <string name="staffs">Staffs</string>
+    <string name="clipboard_title_copied_message">Copied</string>
+    <string name="message_message_copied">Message Copied</string>
+    <string name="today">Today</string>
+    <string name="yesterday">Yesterday</string>
+</resources>
