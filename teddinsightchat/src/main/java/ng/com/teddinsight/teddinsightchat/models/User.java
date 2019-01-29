@@ -1,4 +1,4 @@
-package ng.com.teddinsight.teddinsightchat;
+package ng.com.teddinsight.teddinsightchat.models;
 
 
 import android.os.Parcel;

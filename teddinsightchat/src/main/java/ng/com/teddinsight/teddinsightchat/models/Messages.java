@@ -1,4 +1,4 @@
-package ng.com.teddinsight.teddinsight_app.models;
+package ng.com.teddinsight.teddinsightchat.models;
 
 import com.google.firebase.database.ServerValue;
 

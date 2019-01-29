@@ -3,7 +3,7 @@ package ng.com.teddinsight.teddinsightchat.listeners;
 
 import com.google.android.gms.tasks.Tasks;
 
-import ng.com.teddinsight.teddinsightchat.User;
+import ng.com.teddinsight.teddinsightchat.models.User;
 
 public class Listeners {
 

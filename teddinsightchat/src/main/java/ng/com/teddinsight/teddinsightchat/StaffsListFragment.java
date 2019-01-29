@@ -31,6 +31,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 
 import ng.com.teddinsight.teddinsightchat.listeners.Listeners;
+import ng.com.teddinsight.teddinsightchat.models.Notifications;
+import ng.com.teddinsight.teddinsightchat.models.User;
 import ng.com.teddinsight.teddinsightchat.widgets.EmptyStateRecyclerView;
 
 public class StaffsListFragment extends Fragment {

@@ -1,18 +1,14 @@
 package ng.com.teddinsight.teddinsightbase;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import ng.com.teddinsight.teddinsightchat.StaffsListFragment;
 import ng.com.teddinsight.teddinsightchat.ThreadFragment;
-import ng.com.teddinsight.teddinsightchat.User;
+import ng.com.teddinsight.teddinsightchat.models.User;
 import ng.com.teddinsight.teddinsightchat.listeners.Listeners;
 
 import android.os.Bundle;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 
 public class MainActivity extends AppCompatActivity implements Listeners.StaffItemListener {

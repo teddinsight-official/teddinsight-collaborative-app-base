@@ -29,7 +29,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.transition.TransitionManager;
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import ng.com.teddinsight.teddinsight_app.models.Message;
+import ng.com.teddinsight.teddinsightchat.models.Message;
 
 import static android.content.Context.CLIPBOARD_SERVICE;
 import static android.view.View.GONE;

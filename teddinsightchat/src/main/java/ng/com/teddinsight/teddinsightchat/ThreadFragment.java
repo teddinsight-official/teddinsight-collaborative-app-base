@@ -31,8 +31,6 @@ import com.squareup.picasso.Picasso;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -43,7 +41,9 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
-import ng.com.teddinsight.teddinsight_app.models.Message;
+import ng.com.teddinsight.teddinsightchat.models.Message;
+import ng.com.teddinsight.teddinsightchat.models.Notifications;
+import ng.com.teddinsight.teddinsightchat.models.User;
 import ng.com.teddinsight.teddinsightchat.widgets.EmptyStateRecyclerView;
 
 
