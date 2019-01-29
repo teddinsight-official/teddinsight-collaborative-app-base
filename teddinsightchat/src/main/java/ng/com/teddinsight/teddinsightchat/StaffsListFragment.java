@@ -142,11 +142,12 @@ public class StaffsListFragment extends Fragment {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     Object newMessage = dataSnapshot.child(user.id.substring(0, 5).concat("_newMessage")).getValue();
-                    boolean newMessageExists = newMessage != null && (boolean) newMessage;
+                    long newMessageExists = newMessage == null ? 0 : (long) newMessage;
                     Object lastMessage = dataSnapshot.child("lastMessage").getValue();
-                    if (newMessageExists)
+                    if (newMessageExists > 0) {
+                        newMessageBadge.setText(newMessageExists > 99 ? "9+" : String.valueOf(newMessageExists));
                         newMessageBadge.setVisibility(View.VISIBLE);
-                    else
+                    } else
                         newMessageBadge.setVisibility(View.INVISIBLE);
                     if (lastMessage != null)
                         itemFriendEmailTextView.setText(lastMessage.toString());

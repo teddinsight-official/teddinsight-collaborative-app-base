@@ -52,17 +52,19 @@
             app:layout_constraintTop_toBottomOf="@id/item_friend_name_text_view" />
 
         <TextView
+            android:textSize="10sp"
             android:id="@+id/new_message_badge"
-            android:layout_width="10dp"
-            android:layout_height="10dp"
-            android:background="@drawable/rect_blue"
-            android:fontFamily="@font/sfnsdisplay"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:background="@drawable/notification_badge"
+            android:fontFamily="@font/montserrat"
+            android:gravity="center"
             android:padding="2dp"
-            android:text=""
             android:textColor="@color/white"
             android:visibility="invisible"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="9+" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

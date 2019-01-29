@@ -6,6 +6,7 @@ import android.preference.PreferenceManager;
 import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
 
 import java.util.concurrent.TimeUnit;
 
@@ -33,6 +34,11 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         editor.putBoolean(PREF_SHOULD_SEND_TO_SERVER, true);
         editor.apply();
         scheduleWork();
+    }
+
+    @Override
+    public void onMessageReceived(RemoteMessage remoteMessage) {
+        super.onMessageReceived(remoteMessage);
     }
 
     public static void scheduleWork() {

@@ -206,9 +206,6 @@ public class ThreadFragment extends Fragment implements TextWatcher {
         Message message =
                 new Message(timestamp, -timestamp, dayTimestamp, body, ownerUid, userUid);
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("lastMessage", body);
-        map.put(firebaseUser.getUid().substring(0, 5).concat("_newMessage"), true);
         mDatabase
                 .child("messages")
                 .child(chatRef)
@@ -216,7 +213,26 @@ public class ThreadFragment extends Fragment implements TextWatcher {
                 .setValue(message);
         mDatabase.child("chat")
                 .child(chatRef)
-                .setValue(map);
+                .runTransaction(new Transaction.Handler() {
+                    @NonNull
+                    @Override
+                    public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                        if (mutableData.getValue() == null) {
+                            mutableData.child(firebaseUser.getUid().substring(0, 5).concat("_newMessage")).setValue(1);
+                        } else {
+                            long currentMessageCount = (long) mutableData.child(firebaseUser.getUid().substring(0, 5).concat("_newMessage")).getValue();
+                            currentMessageCount = currentMessageCount + 1;
+                            mutableData.child(firebaseUser.getUid().substring(0, 5).concat("_newMessage")).setValue(currentMessageCount);
+                        }
+                        mutableData.child("lastMessage").setValue(body);
+                        return Transaction.success(mutableData);
+                    }
+
+                    @Override
+                    public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+                        Log.e(TAG, "postTransaction:onComplete:" + databaseError);
+                    }
+                });
         mDatabase
                 .child("notifications")
                 .child(chatingWithUser.getId())
@@ -304,6 +320,6 @@ public class ThreadFragment extends Fragment implements TextWatcher {
         super.onStop();
         adapter.stopListening();
         mDatabase.child("notifications").child(firebaseUser.getUid()).child("count").setValue(0);
-        mDatabase.child("chat").child(chatRef).child(chatingWithUser.getId().substring(0, 5).concat("_newMessage")).setValue(false);
+        mDatabase.child("chat").child(chatRef).child(chatingWithUser.getId().substring(0, 5).concat("_newMessage")).setValue(0);
     }
 }
