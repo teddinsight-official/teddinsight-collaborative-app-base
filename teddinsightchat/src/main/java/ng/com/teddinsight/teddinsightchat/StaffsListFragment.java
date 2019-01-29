@@ -132,7 +132,13 @@ public class StaffsListFragment extends Fragment {
             Picasso.get()
                     .load(user.getProfileImageUrl())
                     .into(itemUserImageView);
-            reference.child("chat").child(firebaseUser.getUid().concat("_").concat(user.getId())).addValueEventListener(new ValueEventListener() {
+            String chatRef;
+            int res = user.getId().compareTo(firebaseUser.getUid());
+            if (res > 0)
+                chatRef = user.getId().concat("_").concat(firebaseUser.getUid());
+            else
+                chatRef = firebaseUser.getUid().concat("_").concat(user.getId());
+            reference.child("chat").child(chatRef).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     Object newMessage = dataSnapshot.child(user.id.substring(0, 5).concat("_newMessage")).getValue();
