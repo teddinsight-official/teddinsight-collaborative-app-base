@@ -31,6 +31,8 @@ import com.squareup.picasso.Picasso;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -204,12 +206,17 @@ public class ThreadFragment extends Fragment implements TextWatcher {
         Message message =
                 new Message(timestamp, -timestamp, dayTimestamp, body, ownerUid, userUid);
 
-
+        Map<String, Object> map = new HashMap<>();
+        map.put("lastMessage", body);
+        map.put(firebaseUser.getUid().substring(0, 5).concat("_newMessage"), true);
         mDatabase
                 .child("messages")
                 .child(chatRef)
                 .push()
                 .setValue(message);
+        mDatabase.child("chat")
+                .child(chatRef)
+                .setValue(map);
         mDatabase
                 .child("notifications")
                 .child(chatingWithUser.getId())
@@ -296,5 +303,7 @@ public class ThreadFragment extends Fragment implements TextWatcher {
     public void onStop() {
         super.onStop();
         adapter.stopListening();
+        mDatabase.child("notifications").child(firebaseUser.getUid()).child("count").setValue(0);
+        mDatabase.child("chat").child(chatRef).child(chatingWithUser.getId().substring(0, 5).concat("_newMessage")).setValue(false);
     }
 }

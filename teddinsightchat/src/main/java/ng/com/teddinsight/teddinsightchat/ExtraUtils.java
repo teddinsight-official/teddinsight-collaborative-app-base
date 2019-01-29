@@ -25,13 +25,6 @@ public class ExtraUtils {
         return (int) l;
     }
 
-    public static String formatDate(long milliseconds) /* This is your topStory.getTime()*1000 */ {
-        String days[] = {"Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"};
-        String months[] = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-        Date d = new Date(milliseconds);
-        return days[d.getDay()] + " " + months[d.getMonth()] + " " + d.getYear();
-    }
-
     public static int getColor(int status) {
         switch (status) {
             case 0:

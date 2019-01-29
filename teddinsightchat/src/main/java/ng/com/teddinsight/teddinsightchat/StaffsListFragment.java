@@ -122,13 +122,11 @@ public class StaffsListFragment extends Fragment {
 
         void setUser(User user) {
             currentUser = user;
-            if (user.id.equals(firebaseUser.getUid()) || user.role.equalsIgnoreCase(User.USER_CLIENT) || user.role.equalsIgnoreCase(User.USER_PARTNER)) {
-                RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) itemView.getLayoutParams();
-                params.height = 0;
-                params.setMargins(0, 0, 0, 0);
-                itemView.setPadding(0, 0, 0, 0);
-                itemView.setLayoutParams(params);
-                itemView.setVisibility(View.GONE);
+            if (!user.role.equals(User.USER_ADMIN) && (user.id.equals(firebaseUser.getUid()) || user.role.equalsIgnoreCase(User.USER_CLIENT) || user.role.equalsIgnoreCase(User.USER_PARTNER)))
+                hideUserLayout();
+            else {
+                if (user.id.equals(firebaseUser.getUid()))
+                    hideUserLayout();
             }
             itemFriendNameTextView.setText(user.getFirstName().concat(" ").concat(user.getLastName()));
             Picasso.get()
@@ -137,7 +135,7 @@ public class StaffsListFragment extends Fragment {
             reference.child("chat").child(firebaseUser.getUid().concat("_").concat(user.getId())).addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Object newMessage = dataSnapshot.child("newMessage").getValue();
+                    Object newMessage = dataSnapshot.child(user.id.substring(0, 5).concat("_newMessage")).getValue();
                     boolean newMessageExists = newMessage != null && (boolean) newMessage;
                     Object lastMessage = dataSnapshot.child("lastMessage").getValue();
                     if (newMessageExists)
@@ -154,6 +152,15 @@ public class StaffsListFragment extends Fragment {
 
                 }
             });
+        }
+
+        void hideUserLayout() {
+            RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) itemView.getLayoutParams();
+            params.height = 0;
+            params.setMargins(0, 0, 0, 0);
+            itemView.setPadding(0, 0, 0, 0);
+            itemView.setLayoutParams(params);
+            itemView.setVisibility(View.GONE);
         }
 
         @Override
