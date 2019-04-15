@@ -114,7 +114,8 @@ public class ThreadFragment extends Fragment implements TextWatcher {
         }
         mDatabase = rootRef;
         sendFab.requestFocus();
-        Picasso.get().load(chatingWithUser.getProfileImageUrl()).placeholder(R.drawable.avatar).into(userAvatar);
+        String defaultUrl = "https://png.pngtree.com/svg/20161021/de74bae88b.png";
+        Picasso.get().load(chatingWithUser.getProfileImageUrl() == null || TextUtils.isEmpty(chatingWithUser.getProfileImageUrl()) ? defaultUrl : chatingWithUser.getProfileImageUrl()).placeholder(R.drawable.avatar).into(userAvatar);
         userName.setText(chatingWithUser.getFirstName().concat(" ").concat(chatingWithUser.getLastName()));
         int res = chatingWithUser.getId().compareTo(firebaseUser.getUid());
         if (res > 0)
