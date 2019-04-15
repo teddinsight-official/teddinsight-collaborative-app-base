@@ -2,7 +2,9 @@ package ng.com.teddinsight.teddinsightchat;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -131,8 +133,13 @@ public class StaffsListFragment extends Fragment {
                     hideUserLayout();
             }
             itemFriendNameTextView.setText(user.getFirstName().concat(" ").concat(user.getLastName()));
+            String profileUrl;
+            if (user.getProfileImageUrl() == null || TextUtils.isEmpty(user.getProfileImageUrl()))
+                profileUrl = "https://png.pngtree.com/svg/20161021/de74bae88b.png";
+            else  profileUrl = user.getProfileImageUrl();
+
             Picasso.get()
-                    .load(user.getProfileImageUrl())
+                    .load(profileUrl)
                     .into(itemUserImageView);
             String chatRef;
             int res = user.getId().compareTo(firebaseUser.getUid());
