@@ -7,4 +7,6 @@
     <string name="today">Today</string>
     <string name="yesterday">Yesterday</string>
     <string name="default_notification_channel_id">Default Notifications</string>
+    <string name="no_conversation">Start a new conversation</string>
+    <string name="chats">Chats</string>
 </resources>

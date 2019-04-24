@@ -6,12 +6,13 @@ android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "ng.com.teddinsight.teddinsightbase"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 28
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -39,4 +40,10 @@ dependencies {
     implementation 'com.jakewharton:butterknife:10.0.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.0.0'
     implementation 'androidx.annotation:annotation:1.0.1'
+    implementation project(path: ':teddinsightchat')
+    implementation 'com.google.firebase:firebase-auth:16.2.1'
+    implementation 'com.google.firebase:firebase-database:16.1.0'
+    implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'com.squareup.okhttp3:okhttp:3.12.0'
+
 }

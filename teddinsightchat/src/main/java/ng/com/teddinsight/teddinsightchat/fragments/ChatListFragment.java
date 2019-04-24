@@ -1,10 +1,9 @@
-package ng.com.teddinsight.teddinsightchat;
+package ng.com.teddinsight.teddinsightchat.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -12,6 +11,7 @@ import android.widget.TextView;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -27,17 +27,21 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import ng.com.teddinsight.teddinsightchat.R;
+import ng.com.teddinsight.teddinsightchat.R2;
 import ng.com.teddinsight.teddinsightchat.listeners.Listeners;
 import ng.com.teddinsight.teddinsightchat.models.Notifications;
 import ng.com.teddinsight.teddinsightchat.models.User;
 import ng.com.teddinsight.teddinsightchat.widgets.EmptyStateRecyclerView;
 
-public class StaffsListFragment extends Fragment {
+public class ChatListFragment extends Fragment {
 
     @BindView(R2.id.activity_main_toolbar)
     Toolbar toolbar;
@@ -45,13 +49,18 @@ public class StaffsListFragment extends Fragment {
     EmptyStateRecyclerView usersRecycler;
     @BindView(R2.id.activity_main_empty_view)
     TextView emptyView;
+    @BindView(R2.id.newChat)
+    FloatingActionButton floatingActionButton;
+    @BindView(R2.id.title)
+    TextView title;
     FirebaseRecyclerAdapter adapter;
     FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     private DatabaseReference reference = FirebaseDatabase.getInstance().getReference();
     private Listeners.StaffItemListener listener;
+    public User currentUser;
 
-    public static StaffsListFragment NewInstance() {
-        return new StaffsListFragment();
+    public static ChatListFragment NewInstance() {
+        return new ChatListFragment();
     }
 
     @Nullable
@@ -59,6 +68,7 @@ public class StaffsListFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_user_list, container, false);
         ButterKnife.bind(this, v);
+        getCurrentUser();
         return v;
     }
 
@@ -66,7 +76,16 @@ public class StaffsListFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         clearChatNotification();
-        Query query = reference.child(User.getTableName());
+        title.setText(getString(R.string.chats));
+        floatingActionButton.setVisibility(View.VISIBLE);
+        floatingActionButton.setOnClickListener(v -> {
+            FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
+            Fragment prev = getChildFragmentManager().findFragmentByTag("staffDialog");
+            if (prev != null)
+                fragmentTransaction.remove(prev);
+            StaffDialogFragment.NewInstance(currentUser).show(fragmentTransaction, "staffDialog");
+        });
+        Query query = reference.child("chat").child(firebaseUser.getUid()).orderByChild("timeStamp");
         FirebaseRecyclerOptions<User> options =
                 new FirebaseRecyclerOptions.Builder<User>()
                         .setQuery(query, User.class)
@@ -88,10 +107,24 @@ public class StaffsListFragment extends Fragment {
         };
         usersRecycler.setAdapter(adapter);
         usersRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
-        emptyView.setText(getString(R.string.no_staff));
+        emptyView.setText(getString(R.string.no_conversation));
         usersRecycler.setEmptyView(emptyView);
 
 
+    }
+
+    public void getCurrentUser() {
+        reference.child(User.getTableName()).child(firebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                currentUser = dataSnapshot.getValue(User.class);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     @Override
@@ -116,7 +149,7 @@ public class StaffsListFragment extends Fragment {
         CardView itemUserParent;
         @BindView(R2.id.new_message_badge)
         TextView newMessageBadge;
-        private User currentUser;
+        private User chatuser;
 
         public StaffListViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -125,49 +158,23 @@ public class StaffsListFragment extends Fragment {
         }
 
         void setUser(User user) {
-            currentUser = user;
-            if (!user.role.equals(User.USER_ADMIN) && (user.id.equals(firebaseUser.getUid()) || user.role.equalsIgnoreCase(User.USER_CLIENT) || user.role.equalsIgnoreCase(User.USER_PARTNER)))
-                hideUserLayout();
-            else {
-                if (user.id.equals(firebaseUser.getUid()))
-                    hideUserLayout();
-            }
+            chatuser = user;
             itemFriendNameTextView.setText(user.getFirstName().concat(" ").concat(user.getLastName()));
             String profileUrl;
             if (user.getProfileImageUrl() == null || TextUtils.isEmpty(user.getProfileImageUrl()))
                 profileUrl = "https://png.pngtree.com/svg/20161021/de74bae88b.png";
-            else  profileUrl = user.getProfileImageUrl();
+            else profileUrl = user.getProfileImageUrl();
 
             Picasso.get()
                     .load(profileUrl)
                     .into(itemUserImageView);
-            String chatRef;
-            int res = user.getId().compareTo(firebaseUser.getUid());
-            if (res > 0)
-                chatRef = user.getId().concat("_").concat(firebaseUser.getUid());
-            else
-                chatRef = firebaseUser.getUid().concat("_").concat(user.getId());
-            reference.child("chat").child(chatRef).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    Object newMessage = dataSnapshot.child(user.id.substring(0, 5).concat("_newMessage")).getValue();
-                    long newMessageExists = newMessage == null ? 0 : (long) newMessage;
-                    Object lastMessage = dataSnapshot.child("lastMessage").getValue();
-                    if (newMessageExists > 0) {
-                        newMessageBadge.setText(newMessageExists > 99 ? "9+" : String.valueOf(newMessageExists));
-                        newMessageBadge.setVisibility(View.VISIBLE);
-                    } else
-                        newMessageBadge.setVisibility(View.INVISIBLE);
-                    if (lastMessage != null)
-                        itemFriendEmailTextView.setText(lastMessage.toString());
-
-                }
-
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                }
-            });
+            if (user.getUnreadCount() > 0) {
+                newMessageBadge.setText(user.getUnreadCount() > 99 ? "9+" : String.valueOf(user.getUnreadCount()));
+                newMessageBadge.setVisibility(View.VISIBLE);
+            } else
+                newMessageBadge.setVisibility(View.INVISIBLE);
+            if (user.getLastMessage() != null)
+                itemFriendEmailTextView.setText(user.getLastMessage());
         }
 
         void hideUserLayout() {
@@ -181,7 +188,7 @@ public class StaffsListFragment extends Fragment {
 
         @Override
         public void onClick(View v) {
-            listener.onStaffItemClicked(currentUser);
+            listener.onStaffItemClicked(currentUser, chatuser);
         }
     }
 

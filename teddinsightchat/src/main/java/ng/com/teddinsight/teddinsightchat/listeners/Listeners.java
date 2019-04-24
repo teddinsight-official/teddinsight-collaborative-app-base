@@ -14,6 +14,6 @@ public class Listeners {
 
 
     public interface StaffItemListener {
-        void onStaffItemClicked(User user);
+        void onStaffItemClicked(User currentUser, User chatUser);
     }
 }

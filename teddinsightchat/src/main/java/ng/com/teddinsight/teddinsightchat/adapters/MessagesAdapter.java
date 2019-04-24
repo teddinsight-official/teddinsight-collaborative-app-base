@@ -1,4 +1,4 @@
-package ng.com.teddinsight.teddinsightchat;
+package ng.com.teddinsight.teddinsightchat.adapters;
 
 import android.content.ClipData;
 import android.content.ClipboardManager;
@@ -29,6 +29,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.transition.TransitionManager;
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import ng.com.teddinsight.teddinsightchat.R;
+import ng.com.teddinsight.teddinsightchat.R2;
 import ng.com.teddinsight.teddinsightchat.models.Message;
 
 import static android.content.Context.CLIPBOARD_SERVICE;

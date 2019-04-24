@@ -1,11 +1,20 @@
 package ng.com.teddinsight.teddinsightbase;
 
 import android.os.Bundle;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 
-public class MainActivity extends AppCompatActivity  {
+import com.google.firebase.auth.FirebaseAuth;
+
+import ng.com.teddinsight.teddinsightchat.fragments.ChatListFragment;
+import ng.com.teddinsight.teddinsightchat.fragments.ThreadFragment;
+import ng.com.teddinsight.teddinsightchat.listeners.Listeners;
+import ng.com.teddinsight.teddinsightchat.models.User;
+
+
+public class MainActivity extends AppCompatActivity implements Listeners.StaffItemListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -13,25 +22,25 @@ public class MainActivity extends AppCompatActivity  {
         setContentView(R.layout.activity_main);
     }
 
-//    @Override
-//    protected void onStart() {
-//        super.onStart();
-//        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
-//            FirebaseAuth.getInstance().signInWithEmailAndPassword("creative.designer@teddinsight.com", "donmickey").addOnCompleteListener(task -> {
-//                if (task.isSuccessful()) {
-//                    getSupportFragmentManager().beginTransaction().replace(R.id.content, StaffsListFragment.NewInstance()).commit();
-//                } else {
-//                    Toast.makeText(MainActivity.this, "login failed " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-//                }
-//            });
-//        } else {
-//            getSupportFragmentManager().beginTransaction().replace(R.id.content, StaffsListFragment.NewInstance()).commit();
-//        }
-//
-//    }
-//
-//    @Override
-//    public void onStaffItemClicked(User user) {
-//        getSupportFragmentManager().beginTransaction().replace(R.id.content, ThreadFragment.NewInstance(user)).addToBackStack(null).commit();
-//    }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        FirebaseAuth.getInstance().signInWithEmailAndPassword("", "").addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.content, ChatListFragment.NewInstance()).commit();
+            } else {
+                Toast.makeText(MainActivity.this, "login failed " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        //getSupportFragmentManager().beginTransaction().replace(R.id.content, ChatListFragment.NewInstance()).commit();
+
+
+    }
+
+    @Override
+    public void onStaffItemClicked(User currentUser, User chatUser) {
+        getSupportFragmentManager().beginTransaction().replace(R.id.content, ThreadFragment.NewInstance(currentUser, chatUser)).addToBackStack(null).commit();
+    }
+
 }

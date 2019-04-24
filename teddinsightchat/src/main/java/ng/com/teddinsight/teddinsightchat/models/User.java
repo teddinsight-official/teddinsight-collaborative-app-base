@@ -28,6 +28,23 @@ public class User implements Parcelable {
     private String phoneNumber;
     private double salary;
     private long dateRegistered;
+    private long unreadCount;
+    private String lastMessage;
+    private long timeStamp;
+
+    @Exclude
+    public Map<String, Object> toChatMap() {
+        HashMap<String, Object> result = new HashMap<>();
+        result.put("username", username);
+        result.put("firstName", firstName);
+        result.put("lastName", lastName);
+        result.put("id", id);
+        result.put("unreadCount", unreadCount);
+        result.put("lastMessage", lastMessage);
+        result.put("timeStamp", timeStamp);
+        result.put("profileImageUrl", this.profileImageUrl);
+        return result;
+    }
 
 
     public static final String USER_ADMIN = "Admin";
@@ -40,6 +57,24 @@ public class User implements Parcelable {
     public User() {
     }
 
+
+    public User(String id, String username) {
+        this.id = id;
+        this.username = username;
+    }
+
+    public User(String id, String profileImageUrl, String username, String firstName, String lastName, long unreadCount, String lastMessage) {
+        this.username = username;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.unreadCount = unreadCount;
+        this.lastMessage = lastMessage;
+        this.timeStamp = System.currentTimeMillis() * (-1);
+        this.id = id;
+        this.profileImageUrl = profileImageUrl;
+    }
+
+
     protected User(Parcel in) {
         id = in.readString();
         username = in.readString();
@@ -49,11 +84,15 @@ public class User implements Parcelable {
         deviceToken = in.readString();
         role = in.readString();
         hasAccess = in.readByte() != 0;
-        salary = in.readDouble();
-        phoneNumber = in.readString();
-        address = in.readString();
+        profileImageUrl = in.readString();
         dateEmployed = in.readLong();
+        address = in.readString();
+        phoneNumber = in.readString();
+        salary = in.readDouble();
         dateRegistered = in.readLong();
+        unreadCount = in.readLong();
+        lastMessage = in.readString();
+        timeStamp = in.readLong();
     }
 
     public static final Creator<User> CREATOR = new Creator<User>() {
@@ -68,10 +107,36 @@ public class User implements Parcelable {
         }
     };
 
+    public long getDateRegistered() {
+        return dateRegistered;
+    }
 
-    public User(String id, String username) {
-        this.id = id;
-        this.username = username;
+    public void setDateRegistered(long dateRegistered) {
+        this.dateRegistered = dateRegistered;
+    }
+
+    public long getUnreadCount() {
+        return unreadCount;
+    }
+
+    public void setUnreadCount(long unreadCount) {
+        this.unreadCount = unreadCount;
+    }
+
+    public String getLastMessage() {
+        return lastMessage;
+    }
+
+    public void setLastMessage(String lastMessage) {
+        this.lastMessage = lastMessage;
+    }
+
+    public long getTimeStamp() {
+        return timeStamp;
+    }
+
+    public void setTimeStamp(long timeStamp) {
+        this.timeStamp = timeStamp;
     }
 
     public boolean isHasAccess() {
@@ -220,27 +285,6 @@ public class User implements Parcelable {
         return result;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(id);
-        dest.writeString(username);
-        dest.writeString(email);
-        dest.writeString(firstName);
-        dest.writeString(lastName);
-        dest.writeString(deviceToken);
-        dest.writeString(role);
-        dest.writeByte((byte) (hasAccess ? 1 : 0));
-        dest.writeString(phoneNumber);
-        dest.writeString(address);
-        dest.writeLong(dateEmployed);
-        dest.writeDouble(salary);
-        dest.writeLong(dateRegistered);
-    }
 
     public User(String id, String username, String firstName, String lastName, String email, String role, String deviceToken) {
         this.username = username;
@@ -264,5 +308,31 @@ public class User implements Parcelable {
     @Override
     public String toString() {
         return firstName.concat(",").concat(lastName).concat(",").concat(email).concat(",").concat(profileImageUrl);
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(username);
+        dest.writeString(email);
+        dest.writeString(firstName);
+        dest.writeString(lastName);
+        dest.writeString(deviceToken);
+        dest.writeString(role);
+        dest.writeByte((byte) (hasAccess ? 1 : 0));
+        dest.writeString(profileImageUrl);
+        dest.writeLong(dateEmployed);
+        dest.writeString(address);
+        dest.writeString(phoneNumber);
+        dest.writeDouble(salary);
+        dest.writeLong(dateRegistered);
+        dest.writeLong(unreadCount);
+        dest.writeString(lastMessage);
+        dest.writeLong(timeStamp);
     }
 }

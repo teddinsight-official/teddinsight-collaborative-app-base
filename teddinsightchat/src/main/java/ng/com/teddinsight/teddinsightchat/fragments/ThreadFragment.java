@@ -1,4 +1,4 @@
-package ng.com.teddinsight.teddinsightchat;
+package ng.com.teddinsight.teddinsightchat.fragments;
 
 import android.os.Bundle;
 import android.text.Editable;
@@ -37,10 +37,15 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import de.hdodenhof.circleimageview.CircleImageView;
+import ng.com.teddinsight.teddinsightchat.utils.ExtraUtils;
+import ng.com.teddinsight.teddinsightchat.adapters.MessagesAdapter;
+import ng.com.teddinsight.teddinsightchat.R;
+import ng.com.teddinsight.teddinsightchat.R2;
 import ng.com.teddinsight.teddinsightchat.models.Message;
 import ng.com.teddinsight.teddinsightchat.models.Notifications;
 import ng.com.teddinsight.teddinsightchat.models.User;
@@ -52,7 +57,8 @@ import static android.view.View.VISIBLE;
 
 
 public class ThreadFragment extends Fragment implements TextWatcher {
-    public static final String BUNDLE_USER = "user";
+    public static final String BUNDLE_CURRENT_USER = "current_user";
+    public static final String BUNDLE_CHAT_USER = "chat_user";
     private static final String TAG = ThreadFragment.class.getSimpleName();
     @BindView(R2.id.user_avatar)
     CircleImageView userAvatar;
@@ -75,6 +81,7 @@ public class ThreadFragment extends Fragment implements TextWatcher {
     @BindView(R2.id.activity_thread_progress)
     ProgressBar progress;
     User chatingWithUser;
+    User currentUser;
     FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
     DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
     private DatabaseReference mDatabase;
@@ -86,9 +93,10 @@ public class ThreadFragment extends Fragment implements TextWatcher {
     String chatRef = "";
 
 
-    public static ThreadFragment NewInstance(User user) {
+    public static ThreadFragment NewInstance(User currentUser, User chatingWithUser) {
         Bundle b = new Bundle();
-        b.putParcelable(BUNDLE_USER, user);
+        b.putParcelable(BUNDLE_CURRENT_USER, currentUser);
+        b.putParcelable(BUNDLE_CHAT_USER, chatingWithUser);
         ThreadFragment threadFragment = new ThreadFragment();
         threadFragment.setArguments(b);
         return threadFragment;
@@ -106,9 +114,11 @@ public class ThreadFragment extends Fragment implements TextWatcher {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         Bundle bundle = getArguments();
-        chatingWithUser = bundle.getParcelable(BUNDLE_USER);
+        chatingWithUser = bundle.getParcelable(BUNDLE_CHAT_USER);
+        currentUser = bundle.getParcelable(BUNDLE_CURRENT_USER);
         initializeInteractionListeners();
-        if (chatingWithUser == null) {
+        if (chatingWithUser == null || currentUser == null) {
+            Toast.makeText(getContext(), "Cannot start chat", Toast.LENGTH_LONG).show();
             backButton.performClick();
             return;
         }
@@ -213,19 +223,49 @@ public class ThreadFragment extends Fragment implements TextWatcher {
                 .push()
                 .setValue(message);
         mDatabase.child("chat")
-                .child(chatRef)
+                .child(firebaseUser.getUid())
+                .child(chatingWithUser.getId())
                 .runTransaction(new Transaction.Handler() {
                     @NonNull
                     @Override
                     public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
-                        if (mutableData.getValue() == null) {
-                            mutableData.child(firebaseUser.getUid().substring(0, 5).concat("_newMessage")).setValue(1);
+                        User chatUser = mutableData.getValue(User.class);
+                        if (chatUser == null) {
+                            chatUser = new User(chatingWithUser.getId(), chatingWithUser.getProfileImageUrl(), chatingWithUser.getUsername(), chatingWithUser.getFirstName(), chatingWithUser.getLastName(), 0, body);
                         } else {
-                            long currentMessageCount = (long) mutableData.child(firebaseUser.getUid().substring(0, 5).concat("_newMessage")).getValue();
-                            currentMessageCount = currentMessageCount + 1;
-                            mutableData.child(firebaseUser.getUid().substring(0, 5).concat("_newMessage")).setValue(currentMessageCount);
+//                            long currentMessageCount = chatUser.getUnreadCount();
+//                            currentMessageCount = currentMessageCount + 1;
+//                            chatUser.setUnreadCount(currentMessageCount);
+                            chatUser.setLastMessage(body);
+                            chatUser.setTimeStamp(System.currentTimeMillis() * (-1));
                         }
-                        mutableData.child("lastMessage").setValue(body);
+                        mutableData.setValue(chatUser.toChatMap());
+                        return Transaction.success(mutableData);
+                    }
+
+                    @Override
+                    public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+                        Log.e(TAG, "postTransaction:onComplete:" + databaseError);
+                    }
+                });
+        mDatabase.child("chat")
+                .child(chatingWithUser.getId())
+                .child(firebaseUser.getUid())
+                .runTransaction(new Transaction.Handler() {
+                    @NonNull
+                    @Override
+                    public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                        User chatUser = mutableData.getValue(User.class);
+                        if (chatUser == null) {
+                            chatUser = new User(currentUser.getId(), currentUser.getProfileImageUrl(), currentUser.getUsername(), currentUser.getFirstName(), currentUser.getLastName(), 1, body);
+                        } else {
+                            long currentMessageCount = chatUser.getUnreadCount();
+                            currentMessageCount = currentMessageCount + 1;
+                            chatUser.setUnreadCount(currentMessageCount);
+                            chatUser.setLastMessage(body);
+                            chatUser.setTimeStamp(System.currentTimeMillis() * (-1));
+                        }
+                        mutableData.setValue(chatUser.toChatMap());
                         return Transaction.success(mutableData);
                     }
 
@@ -321,6 +361,6 @@ public class ThreadFragment extends Fragment implements TextWatcher {
         super.onStop();
         adapter.stopListening();
         mDatabase.child("notifications").child(firebaseUser.getUid()).child("count").setValue(0);
-        mDatabase.child("chat").child(chatRef).child(chatingWithUser.getId().substring(0, 5).concat("_newMessage")).setValue(0);
+        mDatabase.child("chat").child(firebaseUser.getUid()).child(chatingWithUser.getId()).child("unreadCount").setValue(0);
     }
 }
