@@ -1,14 +1,29 @@
 package ng.com.teddinsight.teddinsightchat;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.util.Log;
+
+import androidx.annotation.NonNull;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+
+import ng.com.teddinsight.teddinsightchat.models.User;
 
 public class ExtraUtils {
 
@@ -99,4 +114,32 @@ public class ExtraUtils {
             return diff / DAY_MILLIS + " days ago";
         }
     }
+
+    public static void registerRevokeListener(Activity activity, Class destinationClass) {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user != null) {
+            String id = user.getUid();
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(User.getTableName()).child(id).child("hasAccess");
+            ValueEventListener revokeEventListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    Log.e("APP TAG", dataSnapshot.getValue().toString());
+                    if (!(boolean) dataSnapshot.getValue()) {
+                        FirebaseAuth.getInstance().signOut();
+                        Intent i = new Intent(activity, destinationClass);
+                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        i.putExtra("revoked", "revoke");
+                        activity.startActivity(i);
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            };
+            ref.addValueEventListener(revokeEventListener);
+        }
+    }
+
 }
