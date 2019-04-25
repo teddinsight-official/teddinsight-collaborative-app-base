@@ -1,6 +1,7 @@
 package ng.com.teddinsight.teddinsightbase;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,10 +26,12 @@ public class MainActivity extends AppCompatActivity implements Listeners.StaffIt
     @Override
     protected void onStart() {
         super.onStart();
-        FirebaseAuth.getInstance().signInWithEmailAndPassword("", "").addOnCompleteListener(task -> {
+        FirebaseAuth.getInstance().signInWithEmailAndPassword("itkalasado@gmail.com", "itkalasado").addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
+                Log.e("jfs", "succ");
                 getSupportFragmentManager().beginTransaction().replace(R.id.content, ChatListFragment.NewInstance()).commit();
             } else {
+                Log.e("error", task.getException().getLocalizedMessage());
                 Toast.makeText(MainActivity.this, "login failed " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
             }
         });

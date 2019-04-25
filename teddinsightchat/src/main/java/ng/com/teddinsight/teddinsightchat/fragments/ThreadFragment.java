@@ -361,6 +361,19 @@ public class ThreadFragment extends Fragment implements TextWatcher {
         super.onStop();
         adapter.stopListening();
         mDatabase.child("notifications").child(firebaseUser.getUid()).child("count").setValue(0);
-        mDatabase.child("chat").child(firebaseUser.getUid()).child(chatingWithUser.getId()).child("unreadCount").setValue(0);
+        mDatabase.child("chat").child(firebaseUser.getUid()).child(chatingWithUser.getId()).child("unreadCount").runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
+                if (mutableData.getValue() != null)
+                    mutableData.setValue(0);
+                return Transaction.success(mutableData);
+            }
+
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, boolean b, @Nullable DataSnapshot dataSnapshot) {
+
+            }
+        });
     }
 }
