@@ -53,6 +53,7 @@ public class User implements Parcelable {
     public static final String USER_CONTENT = "Content Curator";
     public static final String USER_CLIENT = "Client";
     public static final String USER_PARTNER = "Partner";
+    public static final String USER_SOCIAL = "Social Media Manager";
 
     public User() {
     }
