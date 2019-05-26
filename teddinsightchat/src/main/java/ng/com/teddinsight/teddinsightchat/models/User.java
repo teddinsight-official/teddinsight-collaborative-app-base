@@ -247,10 +247,15 @@ public class User implements Parcelable {
         this.role = role;
     }
 
+    public String getBusinessName() {
+        return businessName;
+    }
 
     public static String getTableName() {
         return "Users";
     }
+
+
 
     @Exclude
     public Map<String, Object> toMap(boolean isUpdate) {
