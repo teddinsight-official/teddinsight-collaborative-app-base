@@ -31,6 +31,7 @@ public class User implements Parcelable {
     private long unreadCount;
     private String lastMessage;
     private long timeStamp;
+    private String businessName;
 
     @Exclude
     public Map<String, Object> toChatMap() {
@@ -268,6 +269,7 @@ public class User implements Parcelable {
         result.put("address", address);
         result.put("phoneNumber", phoneNumber);
         result.put("profileImageUrl", profileImageUrl);
+        result.put("businessName", businessName);
         return result;
     }
 
@@ -283,6 +285,7 @@ public class User implements Parcelable {
         result.put("id", id);
         result.put("hasAccess", this.hasAccess ? "true" : "false");
         result.put("profileImageUrl", this.profileImageUrl);
+        result.put("businessName", businessName);
         return result;
     }
 
