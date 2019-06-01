@@ -26,7 +26,7 @@ public class MainActivity extends AppCompatActivity implements Listeners.StaffIt
     @Override
     protected void onStart() {
         super.onStart();
-        FirebaseAuth.getInstance().signInWithEmailAndPassword("itkalasado@gmail.com", "itkalasado").addOnCompleteListener(task -> {
+        FirebaseAuth.getInstance().signInWithEmailAndPassword("oluwatayoadegboye@gmail.com", "itkalasado13").addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 Log.e("jfs", "succ");
                 getSupportFragmentManager().beginTransaction().replace(R.id.content, ChatListFragment.NewInstance()).commit();

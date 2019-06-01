@@ -81,7 +81,7 @@ public class StaffDialogFragment extends DialogFragment {
         currentUser = getArguments().getParcelable(ThreadFragment.BUNDLE_CURRENT_USER);
         if (currentUser == null)
             Objects.requireNonNull(getDialog()).cancel();
-        Query query = reference.child(User.getTableName());
+        Query query = reference.child(User.getTableName()).orderByChild("lastName");
         FirebaseRecyclerOptions<User> options =
                 new FirebaseRecyclerOptions.Builder<User>()
                         .setQuery(query, User.class)
@@ -113,6 +113,7 @@ public class StaffDialogFragment extends DialogFragment {
         listener = (Listeners.StaffItemListener) context;
 
     }
+
     class StaffListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R2.id.item_user_image_view)
         ImageView itemUserImageView;
@@ -134,12 +135,16 @@ public class StaffDialogFragment extends DialogFragment {
 
         void setUser(User user) {
             chatUser = user;
-            if (!user.role.equals(User.USER_ADMIN) && (user.id.equals(firebaseUser.getUid()) || user.role.equalsIgnoreCase(User.USER_CLIENT) || user.role.equalsIgnoreCase(User.USER_PARTNER)))
+
+            if ((user.id.equalsIgnoreCase(firebaseUser.getUid()))
+                    || (currentUser.role.equalsIgnoreCase(User.USER_PARTNER) && !user.role.equalsIgnoreCase(User.USER_ADMIN))
+                    || (!currentUser.role.equalsIgnoreCase(User.USER_ADMIN) && (user.role.equalsIgnoreCase(User.USER_PARTNER) || user.role.equalsIgnoreCase(User.USER_CLIENT)))
+                    || (user.role.equalsIgnoreCase(User.USER_CLIENT)))
                 hideUserLayout();
-            else {
-                if (user.id.equals(firebaseUser.getUid()))
-                    hideUserLayout();
-            }
+            else
+                showUserLayout();
+
+
             itemFriendNameTextView.setText(user.getFirstName().concat(" ").concat(user.getLastName()));
             String profileUrl;
             if (user.getProfileImageUrl() == null || TextUtils.isEmpty(user.getProfileImageUrl()))
@@ -159,6 +164,15 @@ public class StaffDialogFragment extends DialogFragment {
             itemView.setPadding(0, 0, 0, 0);
             itemView.setLayoutParams(params);
             itemView.setVisibility(View.GONE);
+        }
+
+        void showUserLayout() {
+            RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) itemView.getLayoutParams();
+            params.height = RecyclerView.LayoutParams.WRAP_CONTENT;
+            params.setMargins(4, 4, 4, 4);
+            itemView.setPadding(4, 4, 4, 4);
+            itemView.setLayoutParams(params);
+            itemView.setVisibility(View.VISIBLE);
         }
 
         @Override

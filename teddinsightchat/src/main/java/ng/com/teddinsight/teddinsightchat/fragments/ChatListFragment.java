@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
@@ -63,6 +64,7 @@ public class ChatListFragment extends Fragment {
         return new ChatListFragment();
     }
 
+
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -79,6 +81,11 @@ public class ChatListFragment extends Fragment {
         title.setText(getString(R.string.chats));
         floatingActionButton.setVisibility(View.VISIBLE);
         floatingActionButton.setOnClickListener(v -> {
+            if (currentUser == null) {
+                getCurrentUser();
+                Toast.makeText(getContext(), "Try again", Toast.LENGTH_SHORT).show();
+                return;
+            }
             FragmentTransaction fragmentTransaction = getChildFragmentManager().beginTransaction();
             Fragment prev = getChildFragmentManager().findFragmentByTag("staffDialog");
             if (prev != null)
