@@ -41,6 +41,7 @@ import ng.com.teddinsight.teddinsightchat.R2;
 import ng.com.teddinsight.teddinsightchat.listeners.Listeners;
 import ng.com.teddinsight.teddinsightchat.models.Notifications;
 import ng.com.teddinsight.teddinsightchat.models.User;
+import ng.com.teddinsight.teddinsightchat.utils.ExtraUtils;
 import ng.com.teddinsight.teddinsightchat.widgets.EmptyStateRecyclerView;
 
 public class StaffDialogFragment extends DialogFragment {
@@ -81,7 +82,7 @@ public class StaffDialogFragment extends DialogFragment {
         currentUser = getArguments().getParcelable(ThreadFragment.BUNDLE_CURRENT_USER);
         if (currentUser == null)
             Objects.requireNonNull(getDialog()).cancel();
-        Query query = reference.child(User.getTableName()).orderByChild("lastName");
+        Query query = reference.child(User.getTableName()).child(ExtraUtils.getWorkspaceId()).orderByChild("lastName");
         FirebaseRecyclerOptions<User> options =
                 new FirebaseRecyclerOptions.Builder<User>()
                         .setQuery(query, User.class)
@@ -143,6 +144,7 @@ public class StaffDialogFragment extends DialogFragment {
                 hideUserLayout();
             else
                 showUserLayout();
+
 
 
             itemFriendNameTextView.setText(user.getFirstName().concat(" ").concat(user.getLastName()));

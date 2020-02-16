@@ -13,6 +13,9 @@ import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import ng.com.teddinsight.teddinsightchat.models.User;
+import ng.com.teddinsight.teddinsightchat.utils.ExtraUtils;
+
 public class MyWorker extends Worker {
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
     public static final String TAG = MyWorker.class.getSimpleName();
@@ -29,7 +32,7 @@ public class MyWorker extends Worker {
         String token = PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString(MyFirebaseMessagingService.PREF_REG_TOKEN, "");
         String uid = user.getUid();
         Log.e(TAG, uid);
-        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference("Users/" + uid);
+        DatabaseReference userRef = FirebaseDatabase.getInstance().getReference(User.getTableName()).child(ExtraUtils.getWorkspaceId()).child(uid);
         userRef.child("deviceToken").setValue(token).addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
                 MyFirebaseMessagingService.cancleWork(getApplicationContext());

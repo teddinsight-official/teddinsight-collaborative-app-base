@@ -40,6 +40,7 @@ import ng.com.teddinsight.teddinsightchat.R2;
 import ng.com.teddinsight.teddinsightchat.listeners.Listeners;
 import ng.com.teddinsight.teddinsightchat.models.Notifications;
 import ng.com.teddinsight.teddinsightchat.models.User;
+import ng.com.teddinsight.teddinsightchat.utils.ExtraUtils;
 import ng.com.teddinsight.teddinsightchat.widgets.EmptyStateRecyclerView;
 
 public class ChatListFragment extends Fragment {
@@ -92,7 +93,7 @@ public class ChatListFragment extends Fragment {
                 fragmentTransaction.remove(prev);
             StaffDialogFragment.NewInstance(currentUser).show(fragmentTransaction, "staffDialog");
         });
-        Query query = reference.child("chat").child(firebaseUser.getUid()).orderByChild("timeStamp");
+        Query query = reference.child("chat").child(ExtraUtils.getWorkspaceId()).child(firebaseUser.getUid()).orderByChild("timeStamp");
         FirebaseRecyclerOptions<User> options =
                 new FirebaseRecyclerOptions.Builder<User>()
                         .setQuery(query, User.class)
@@ -121,7 +122,7 @@ public class ChatListFragment extends Fragment {
     }
 
     public void getCurrentUser() {
-        reference.child(User.getTableName()).child(firebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+        reference.child(User.getTableName()).child(ExtraUtils.getWorkspaceId()).child(firebaseUser.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 currentUser = dataSnapshot.getValue(User.class);
@@ -142,7 +143,7 @@ public class ChatListFragment extends Fragment {
     }
 
     private void clearChatNotification() {
-        FirebaseDatabase.getInstance().getReference().child(Notifications.getTableName()).child(firebaseUser.getUid()).child("count").setValue(0);
+        FirebaseDatabase.getInstance().getReference().child(Notifications.getTableName()).child(ExtraUtils.getWorkspaceId()).child(firebaseUser.getUid()).child("count").setValue(0);
     }
 
     class StaffListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {

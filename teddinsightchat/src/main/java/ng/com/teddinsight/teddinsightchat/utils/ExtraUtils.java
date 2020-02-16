@@ -17,6 +17,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.pixplicity.easyprefs.library.Prefs;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -27,6 +28,7 @@ import ng.com.teddinsight.teddinsightchat.models.User;
 
 public class ExtraUtils {
 
+    public static final String WORKSPACE_ID = "workspace_id";
     private static final int SECOND_MILLIS = 1000;
     private static final int MINUTE_MILLIS = 60 * SECOND_MILLIS;
     private static final int HOUR_MILLIS = 60 * MINUTE_MILLIS;
@@ -119,10 +121,13 @@ public class ExtraUtils {
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user != null) {
             String id = user.getUid();
-            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(User.getTableName()).child(id).child("hasAccess");
+            DatabaseReference ref = FirebaseDatabase.getInstance().getReference().child(User.getTableName()).child(ExtraUtils.getWorkspaceId()).child(id).child("hasAccess");
             ValueEventListener revokeEventListener = new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (!dataSnapshot.exists()) {
+                        return;
+                    }
                     Log.e("APP TAG", dataSnapshot.getValue().toString());
                     if (!(boolean) dataSnapshot.getValue()) {
                         FirebaseAuth.getInstance().signOut();
@@ -142,4 +147,7 @@ public class ExtraUtils {
         }
     }
 
+    public static String getWorkspaceId() {
+        return Prefs.getString(WORKSPACE_ID, "workspace_null");
+    }
 }

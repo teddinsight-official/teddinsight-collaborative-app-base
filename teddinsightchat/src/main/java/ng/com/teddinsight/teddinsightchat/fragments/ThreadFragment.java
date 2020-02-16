@@ -133,7 +133,7 @@ public class ThreadFragment extends Fragment implements TextWatcher {
         else
             chatRef = firebaseUser.getUid().concat("_").concat(chatingWithUser.getId());
         initializeMessagesRecycler();
-        rootRef.child("presence").child(chatingWithUser.id).child("online").addValueEventListener(new ValueEventListener() {
+        rootRef.child("presence").child(ExtraUtils.getWorkspaceId()).child(chatingWithUser.id).child("online").addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 Object onlineObj = dataSnapshot.getValue();
@@ -167,6 +167,7 @@ public class ThreadFragment extends Fragment implements TextWatcher {
         }
         Query messagesQuery = mDatabase
                 .child("messages")
+                .child(ExtraUtils.getWorkspaceId())
                 .child(chatRef)
                 .orderByChild("negatedTimestamp");
         FirebaseRecyclerOptions<Message> options =
@@ -219,10 +220,12 @@ public class ThreadFragment extends Fragment implements TextWatcher {
 
         mDatabase
                 .child("messages")
+                .child(ExtraUtils.getWorkspaceId())
                 .child(chatRef)
                 .push()
                 .setValue(message);
         mDatabase.child("chat")
+                .child(ExtraUtils.getWorkspaceId())
                 .child(firebaseUser.getUid())
                 .child(chatingWithUser.getId())
                 .runTransaction(new Transaction.Handler() {
@@ -249,6 +252,7 @@ public class ThreadFragment extends Fragment implements TextWatcher {
                     }
                 });
         mDatabase.child("chat")
+                .child(ExtraUtils.getWorkspaceId())
                 .child(chatingWithUser.getId())
                 .child(firebaseUser.getUid())
                 .runTransaction(new Transaction.Handler() {
@@ -276,6 +280,7 @@ public class ThreadFragment extends Fragment implements TextWatcher {
                 });
         mDatabase
                 .child("notifications")
+                .child(ExtraUtils.getWorkspaceId())
                 .child(chatingWithUser.getId())
                 .runTransaction(new Transaction.Handler() {
                     @NonNull
@@ -360,8 +365,8 @@ public class ThreadFragment extends Fragment implements TextWatcher {
     public void onStop() {
         super.onStop();
         adapter.stopListening();
-        mDatabase.child("notifications").child(firebaseUser.getUid()).child("count").setValue(0);
-        mDatabase.child("chat").child(firebaseUser.getUid()).child(chatingWithUser.getId()).child("unreadCount").runTransaction(new Transaction.Handler() {
+        mDatabase.child("notifications").child(ExtraUtils.getWorkspaceId()).child(firebaseUser.getUid()).child("count").setValue(0);
+        mDatabase.child("chat").child(ExtraUtils.getWorkspaceId()).child(firebaseUser.getUid()).child(chatingWithUser.getId()).child("unreadCount").runTransaction(new Transaction.Handler() {
             @NonNull
             @Override
             public Transaction.Result doTransaction(@NonNull MutableData mutableData) {
